@@ -1,0 +1,427 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Diagnostics;
+namespace CodeForLab1
+{
+    class Program
+    {
+
+        public struct Book
+        {
+            public string title;
+            public string author;
+            public string year;
+            public string path;
+        }
+        static void Main(string[] args)
+        {
+
+            string fnames = "";
+            int i = 0;
+            int j = 0;
+            string s = "";
+            string lastpath = "F:\\lab4pnaaya\\last.txt";
+            //string librpath = "F:\\lab4pnaaya\\library.txt";            
+            var books = new List<Book>();
+            var books2 = new List<Book>();
+            string[] files2 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya");
+            List<string> pathes = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya").ToList<string>();
+            foreach (string filename in pathes)
+            {
+                string razr = Path.GetExtension(filename);
+                fnames = Path.GetFileName(filename);
+                int n = fnames.IndexOf(razr);
+                fnames = fnames.Remove(n, razr.Length);
+                String[] words = fnames.Split('_');
+                books.Add(new Book()
+                {
+                    title = words[1],
+                    author = words[0],
+                    year = words[2],
+                    path = filename
+                });
+                i++;
+            }
+            do
+            {
+
+                Console.Clear();
+                Console.WriteLine("1)Вывод всех изданий\n2)Недавние\n3)Добавить новое\n4)Поиск\n0)Выход");
+                s = Console.ReadLine();
+                switch (s)
+                {
+                    case "1":
+                        {
+                            string s1 = "";
+                            do
+                            {
+                                Console.Clear();
+                                Vivod(books);
+                                Console.WriteLine("1)По названию\n2)По автору\n3)По дате\n4)Информация\n0)В главное меню");
+                                s1 = Console.ReadLine();
+                                switch (s1)
+                                {
+                                    case "1":
+                                        {
+
+                                            var sorted = books.OrderBy(t => t.title);
+                                            Vivods(books, sorted);
+                                            Console.ReadKey();
+                                            break;
+                                        }
+                                    case "2":
+                                        {
+
+                                            var sorted = books.OrderBy(t => t.author);
+                                            Vivods(books, sorted);
+                                            Console.ReadKey();
+                                            break;
+
+                                        }
+                                    case "3":
+                                        {
+
+                                            var sorted = books.OrderBy(t => t.year);
+                                            Vivods(books, sorted);
+                                            Console.ReadKey();
+                                            break;
+                                        }
+                                    case "4":
+                                        {
+                                            Vivod(books);
+                                            Console.WriteLine("Номер издания:");
+                                            string No = Console.ReadLine();
+                                            int num;
+                                            bool isNum = int.TryParse(No, out num);
+                                            if (!isNum)
+                                            {
+                                                Console.WriteLine("Неверный ввод");
+                                                Console.ReadKey();
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                if ((num > i) || (num < 1))
+                                                {
+                                                    Console.WriteLine("Неверный ввод");
+                                                    Console.ReadKey();
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    Inf1(books, num);
+
+                                                }
+                                                Console.ReadKey();
+                                            }
+                                            books.Clear();
+
+                                            string[] files3 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya");
+                                            List<string> pathes2 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya").ToList<string>();
+                                            foreach (string filename in pathes2)
+                                            {
+
+                                                string razr = Path.GetExtension(filename);
+                                                fnames = Path.GetFileName(filename);
+                                                int n = fnames.IndexOf(razr);
+                                                fnames = fnames.Remove(n, razr.Length);
+                                                String[] words = fnames.Split('_');
+                                                books.Add(new Book()
+                                                {
+                                                    title = words[1],
+                                                    author = words[0],
+                                                    year = words[2],
+                                                    path = filename
+                                                });
+                                                i++;
+                                            }
+                                            Console.ReadKey();
+                                            break;
+                                        }
+                                    case "0":
+                                        {
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            break;
+                                        }
+                                }
+
+                            } while (s1 != "0");
+                            break;
+                        }
+                    case "2":
+                        {
+                            FileStream file1 = new FileStream(lastpath, FileMode.Open);
+                            StreamReader reader = new StreamReader(file1);
+                            Console.WriteLine(reader.ReadToEnd());
+                            reader.Close();
+                            Console.ReadKey();
+                            break;
+                        }
+                    case "3":
+                        {
+                            Console.WriteLine("Введите путь к изданию");
+                            string pathn = Console.ReadLine();
+                            Console.WriteLine("Автор");
+                            string authn = Console.ReadLine();
+                            Console.WriteLine("Название");
+                            string namen = Console.ReadLine();
+                            Console.WriteLine("Год");
+                            string yearn = Console.ReadLine();
+                            Addnewi(pathn, namen, authn, yearn, books);
+                            books.Clear();
+
+                            string[] files3 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya");
+                            List<string> pathes2 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya").ToList<string>();
+                            foreach (string filename in pathes2)
+                            {
+                                string razr = Path.GetExtension(filename);
+                                fnames = Path.GetFileName(filename);
+                                int n = fnames.IndexOf(razr);
+                                fnames = fnames.Remove(n, razr.Length);
+                                String[] words = fnames.Split('_');
+                                books.Add(new Book()
+                                {
+                                    title = words[1],
+                                    author = words[0],
+                                    year = words[2],
+                                    path = filename
+                                });
+                                i++;
+                            }
+                            break;
+                        }
+                    case "4":
+                        {
+                            string zap = Console.ReadLine();
+                            j = 0;
+                            Search(books, zap);
+                            books.Clear();
+
+                            string[] files3 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya");
+                            List<string> pathes2 = Directory.GetFiles(@"F:\\lab4pnaaya\\Izdanya").ToList<string>();
+                            foreach (string filename in pathes2)
+                            {
+                                string razr = Path.GetExtension(filename);
+                                fnames = Path.GetFileName(filename);
+                                int n = fnames.IndexOf(razr);
+                                fnames = fnames.Remove(n, razr.Length);
+                                String[] words = fnames.Split('_');
+                                books.Add(new Book()
+                                {
+                                    title = words[1],
+                                    author = words[0],
+                                    year = words[2],
+                                    path = filename
+                                });
+                                i++;
+                            }
+                            Console.ReadKey();
+                            break;
+                        }
+                    case "0":
+                        {
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+            } while (s != "0");
+
+            Console.ReadKey();
+        }
+
+        static void Search(List<Book> books, string zap)
+        {
+            int argh = 0;
+            foreach (Book bk in books)
+            {
+                if (bk.title.Contains(zap) || bk.author.Contains(zap) || bk.year.Contains(zap))
+                {
+                    argh++;
+                    string str = String.Format("| {0,-3} | {1,20} | {2,20} | {3,5}  |"
+                                               , argh
+                                    , bk.author
+                                    , bk.title
+                                    , bk.year);
+                    Console.WriteLine(str);
+                }
+            }
+            Console.WriteLine("Выберете издание");
+            string No = Console.ReadLine();
+            int num;
+            bool isNum = int.TryParse(No, out num);
+            if (!isNum)
+            {
+                Console.WriteLine("Неверный ввод");
+                Console.ReadKey();
+
+            }
+            else
+            {
+                if ((num > argh) || (num < 1))
+                {
+                    Console.WriteLine("Неверный ввод");
+                    Console.ReadKey();
+
+                }
+                else
+                {
+                    int argh1 = 0;
+                    foreach (Book bk in books)
+                    {
+                        if (bk.title.Contains(zap) || bk.author.Contains(zap) || bk.year.Contains(zap))
+                        {
+                            argh1++;
+                            if (argh1 == num)
+                            {
+                                Inf(bk);
+                            }
+                        }
+                    }
+
+                }
+
+            }
+        }
+        static void Vivod(List<Book> books)
+        {
+            int j = 0;
+            foreach (Book bk in books)
+            {
+                j++;
+                string str = String.Format("| {0,-3} | {1,20} | {2,20} | {3,5}  |"
+                                    , j
+                                    , bk.author
+                                    , bk.title
+                                    , bk.year);
+                Console.WriteLine(str);
+            }
+        }
+        static void Vivods(List<Book> list, IOrderedEnumerable<Book> sort)
+        {
+            int j = 0;
+            Console.Clear();
+            foreach (var bk in sort)
+            {
+                j++;
+                string str = String.Format("| {0,-3} | {1,20} | {2,20} | {3,5}  |"
+                                    , j
+                                    , bk.author
+                                    , bk.title
+                                    , bk.year);
+                Console.WriteLine(str);
+            }
+        }
+        static void Inf1(List<Book> books, int num)
+        {
+            int j = 0;
+            foreach (Book bk in books)
+            {
+                j++;
+                if (j == num)
+                {
+                    Inf(bk);
+                }
+            }
+        }
+        static void Inf(Book bk)
+        {
+            Console.Write("Название:");
+            Console.WriteLine(bk.title);
+            Console.Write("Автор:");
+            Console.WriteLine(bk.author);
+            Console.Write("Год:");
+            Console.WriteLine(bk.year);
+            Console.Write("Путь:");
+            Console.WriteLine(bk.path);
+            Lastf(bk);
+            Console.WriteLine("1)Читать");
+            Console.WriteLine("2)Удалить");
+            Console.WriteLine("3)Изменить данные");
+            string yoba = Console.ReadLine();
+            switch (yoba)
+            {
+                case "1":
+                    {
+                        Process.Start(bk.path);
+                        break;
+                    }
+                case "2":
+                    {
+                        File.Delete(bk.path);
+                        break;
+                    }
+                case "3":
+                    {
+                        Console.WriteLine("1)Имя");
+                        Console.WriteLine("2)Автор");
+                        Console.WriteLine("3)Год");
+                        string boba = Console.ReadLine();
+                        switch (boba)
+                        {
+                            case "1":
+                                {
+                                    bk.title = Console.ReadLine();
+                                    break;
+                                }
+                            case "2":
+                                {
+                                    bk.author = Console.ReadLine();
+                                    break;
+                                }
+                            case "3":
+                                {
+                                    bk.year = Console.ReadLine();
+                                    break;
+                                }
+                            default:
+                                {
+                                    break;
+                                }
+                        }
+                        string bkpath = "F:\\lab4pnaaya\\Izdanya\\" + bk.author + "_" + bk.title + "_" + bk.year + Path.GetExtension(bk.path);
+                        File.Move(bk.path, bkpath);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+        }
+        static void Lastf(Book bk)
+        {
+            FileStream aFile = new FileStream("F:\\lab4pnaaya\\last.txt", FileMode.OpenOrCreate);
+            StreamWriter sw = new StreamWriter(aFile);
+            aFile.Seek(0, SeekOrigin.End);
+            string str = String.Format("| {0,20} | {1,20} | {2,5}  |"
+                                    , bk.author
+                                    , bk.title
+                                    , bk.year);
+            sw.WriteLine(str);
+            sw.Close();
+        }
+        static void Addnewi(string p, string n, string a, string y, List<Book> books)
+        {
+            string ext = Path.GetExtension(p);
+            string titlef = "F:\\lab4pnaaya\\Izdanya\\" + a + "_" + n + "_" + y + ext;
+            File.Move(p, titlef);
+            books.Add(new Book()
+            {
+                title = n,
+                author = a,
+                year = y,
+                path = titlef
+            });
+        }
+
+    }
+}
+
